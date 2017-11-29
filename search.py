@@ -161,6 +161,7 @@ def depthFirstSearch(problem):
 
     return result
 
+from collections import deque
 
 def breadthFirstSearch(problem):
     """
@@ -170,11 +171,52 @@ def breadthFirstSearch(problem):
     Breadth-First Search (instance of Graph-Search Algorithm)
     - BFS uses FIFO queue
     """
+    # todo use deque and convert node selection to FIFO
 
-    # Note: Try using Queue or PriorityQueue data structure since DFS uses FIFO
+    # todo pop left node
 
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    # todo maintain solution lists(?)
+    # todo maintain list of all current paths
+    # todo remove path list when not goal and no successors added (inactive)
+    # todo override the path that led to adding a successor to the queue (retired)
+    # todo add new path list when branching off an active path list
+    # todo expand node and add to frontier queue if not explored or in frontier
+
+    root = problem.getStartState()  # Retrieve starting state
+    solution = {}  # Initialize solution dict
+    frontier = {root: {"d": "root", "i": 0}}  # Initialize frontier with current node
+    explored = []  # Initialize explored list
+
+    i = 0  # Use i as an iteration (depth) counter
+    while True:  # loop do
+        i += 1  # Increment i each loop
+        if not len(frontier):  # if the frontier is empty then return failure
+            result = "failure"
+            break
+
+        # todo instead of choosing by max iteration, choose by first in first out
+        # todo node = deque([1, 2, 3]).popleft()
+        # choose a leaf node and remove it from the frontier
+        node = max(frontier.keys(), key=lambda k: frontier[k]["i"])  # todo chop
+        node_data = frontier.pop(node)  # Pull the data for the node and remove from frontier
+
+        # todo maintain solution list to store all active paths
+
+        if problem.isGoalState(node):  # If reached goal, return solution
+            order = sorted(solution.keys(), key=lambda k: solution[k]["i"])  # Order the solution by iteration
+            # Convert string direction to game.Directions objects
+            result = [directions_dict[solution[sol]["d"]] for sol in order if solution[sol]["i"] > 0]
+            break
+
+        explored.append(node)  # add the node to explored set
+        node_successors = problem.getSuccessors(node)  # expand chosen node, adding resulting nodes to frontier
+        for loc, direction, dist in node_successors:
+            # if not in frontier or explored set, add to frontier
+            if loc not in frontier.keys() and loc not in explored:
+                frontier[loc] = {"d": direction, "i": i}
+
+    return result
+
 
 
 def uniformCostSearch(problem):
